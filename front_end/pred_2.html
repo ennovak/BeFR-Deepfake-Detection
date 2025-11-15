@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BeFR — Prediction</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600,700&family=Poppins:wght@600&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Arial;}
+    .logo{font-family:'Poppins',sans-serif;}
+  </style>
+</head>
+<body class="min-h-screen bg-slate-50">
+  <div class="bg-white shadow-sm">
+    <div class="max-w-6xl mx-auto px-6">
+      <header class="flex items-center justify-between py-5">
+        <a href="home_2.html" class="flex items-center gap-3">
+          <div class="logo text-2xl font-semibold text-slate-900">BeFR</div>
+          <div class="text-sm text-slate-500">Deepfake detection</div>
+        </a>
+        <nav class="flex gap-6 text-sm">
+          <a href="home_2.html" class="text-slate-700">Home</a>
+          <a href="pred_2.html" class="text-slate-900 font-medium">Prediction</a>
+          <a href="info.html" class="text-slate-700">Info</a>
+          <a href="help.html" class="text-slate-700">Help</a>
+        </nav>
+      </header>
+    </div>
+  </div>
+
+  <main class="max-w-6xl mx-auto px-6 py-10">
+    <section class="grid md:grid-cols-3 gap-8">
+      <div class="md:col-span-2">
+        <div class="rounded-lg bg-white border shadow p-6">
+          <h2 class="text-xl font-semibold text-slate-900">Upload Image</h2>
+          <p class="text-sm text-slate-600 mt-2">Supported: PNG, JPG, JPEG. Use a clear, frontal face for best results.</p>
+
+          <form id="uploadForm" class="mt-4">
+            <label for="fileInput" class="group block border-dashed border-2 border-slate-200 rounded-md p-4 cursor-pointer hover:border-slate-300">
+              <div class="flex items-center justify-between gap-4">
+                <div>
+                  <div class="text-sm text-slate-700">Drag & drop or click to upload</div>
+                  <div id="fileName" class="text-xs text-slate-500 mt-1">No file selected</div>
+                </div>
+                <div class="px-3 py-2 rounded bg-slate-100 text-sm text-slate-700">Browse</div>
+              </div>
+              <input id="fileInput" name="file" type="file" accept="image/*" class="hidden" />
+            </label>
+
+            <div class="mt-6 flex items-center justify-end gap-3">
+              <button id="predictBtn" type="button" class="px-6 py-2 rounded bg-emerald-500 text-white font-medium hover:bg-emerald-600">Predict</button>
+            </div>
+          </form>
+
+          <!-- Results area -->
+          <div id="resultsCard" class="mt-6 hidden rounded-lg border bg-white p-5">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-sm text-slate-500">Result</div>
+                <div id="resultLabel" class="text-2xl font-semibold text-slate-900 mt-1">—</div>
+              </div>
+              <div class="text-right">
+                <div class="text-sm text-slate-500">Confidence</div>
+                <div id="resultConfidence" class="text-xl font-semibold text-slate-900 mt-1">—%</div>
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <div class="text-xs text-slate-500 mb-1">Progress</div>
+              <div class="w-full bg-slate-100 rounded h-3 overflow-hidden">
+                <div id="progressBar" class="h-3 bg-gradient-to-r from-rose-400 via-yellow-300 to-emerald-400" style="width:0%"></div>
+              </div>
+            </div>
+
+            <div class="mt-4 grid grid-cols-2 gap-4">
+              <div class="p-3 rounded border text-center">
+                <div class="text-xs text-slate-500">AI</div>
+                <div id="aiPct" class="text-lg font-semibold">—%</div>
+              </div>
+              <div class="p-3 rounded border text-center">
+                <div class="text-xs text-slate-500">Real</div>
+                <div id="realPct" class="text-lg font-semibold">—%</div>
+              </div>
+            </div>
+
+            <div class="mt-4 text-right">
+              <a href="report.html" class="text-sm text-rose-600 hover:underline">Report an error</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="rounded-lg border bg-white p-6 shadow">
+        <div class="text-sm text-slate-500">Preview</div>
+        <div id="preview" class="mt-3 w-full h-48 bg-slate-50 rounded flex items-center justify-center text-slate-400 overflow-hidden">
+          <span>No image uploaded</span>
+        </div>
+        <div class="mt-4 text-xs text-slate-500">Tip: upload a clear image without heavy filters.</div>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="max-w-6xl mx-auto px-6 py-8 text-sm text-slate-500">
+    <div class="flex justify-between">
+      <div>© BeFR — Prototype</div>
+      <div>References • Privacy</div>
+    </div>
+  </footer>
+
+<script>
+  const fileInput = document.getElementById('fileInput');
+  const fileName = document.getElementById('fileName');
+  const preview = document.getElementById('preview');
+  const predictBtn = document.getElementById('predictBtn');
+  const resultsCard = document.getElementById('resultsCard');
+  const progressBar = document.getElementById('progressBar');
+  const resultLabel = document.getElementById('resultLabel');
+  const resultConfidence = document.getElementById('resultConfidence');
+  const aiPct = document.getElementById('aiPct');
+  const realPct = document.getElementById('realPct');
+
+  let selectedFile = null;
+
+  fileInput.addEventListener('change', (e) => {
+    selectedFile = e.target.files[0];
+    if (!selectedFile) return;
+    fileName.textContent = selectedFile.name;
+    const reader = new FileReader();
+    reader.onload = () => {
+      preview.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = reader.result;
+      img.className = 'max-h-full max-w-full object-contain rounded';
+      preview.appendChild(img);
+    };
+    reader.readAsDataURL(selectedFile);
+  });
+
+  // drag & drop support
+  const uploadLabel = document.querySelector('label[for="fileInput"]');
+  uploadLabel.addEventListener('dragover', (e) => { e.preventDefault(); uploadLabel.classList.add('bg-slate-50'); });
+  uploadLabel.addEventListener('dragleave', () => { uploadLabel.classList.remove('bg-slate-50'); });
+  uploadLabel.addEventListener('drop', (e) => {
+    e.preventDefault();
+    fileInput.files = e.dataTransfer.files;
+    fileInput.dispatchEvent(new Event('change'));
+  });
+
+  predictBtn.addEventListener('click', async () => {
+    if (!selectedFile) { alert('Please upload an image first.'); return; }
+
+    resultsCard.classList.remove('hidden');
+    progressBar.style.width = '0%';
+    resultLabel.textContent = 'Processing...';
+    resultConfidence.textContent = '—%';
+    aiPct.textContent = '—%';
+    realPct.textContent = '—%';
+
+    // Simulate progress for demo. Replace with real fetch to backend for inference.
+    let p = 0;
+    const timer = setInterval(() => {
+      p += Math.floor(Math.random()*12)+5;
+      if (p > 100) p = 100;
+      progressBar.style.width = p + '%';
+      if (p >= 100) {
+        clearInterval(timer);
+        // Demo result (replace with backend response)
+        const ai = Math.round(Math.random()*40 + 10);
+        const real = 100 - ai;
+        const top = ai > real ? 'AI' : 'Real';
+        const conf = Math.max(ai, real);
+        resultLabel.textContent = top;
+        resultConfidence.textContent = conf + '%';
+        aiPct.textContent = ai + '%';
+        realPct.textContent = real + '%';
+      }
+    }, 250);
+
+    /* Example backend integration:
+    const fd = new FormData();
+    fd.append('file', selectedFile);
+    const resp = await fetch('https://your-backend.example.com/api/predict', { method:'POST', body: fd });
+    if (!resp.ok) { /* handle error *\/ }
+    const json = await resp.json();
+    // expect json = { ai_pct: 23, real_pct: 77 }
+    aiPct.textContent = json.ai_pct + '%';
+    realPct.textContent = json.real_pct + '%';
+    resultLabel.textContent = json.ai_pct > json.real_pct ? 'AI' : 'Real';
+    resultConfidence.textContent = Math.max(json.ai_pct, json.real_pct) + '%';
+    progressBar.style.width = '100%';
+    */
+  });
+</script>
+</body>
+</html>
