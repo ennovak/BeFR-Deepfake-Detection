@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BeFR — Report an Error</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600,700&family=Poppins:wght@600&display=swap" rel="stylesheet">
+  <style>body{font-family:'Inter',system-ui;} .logo{font-family:'Poppins'}</style>
+</head>
+<body class="min-h-screen bg-slate-50">
+  <div class="bg-white shadow-sm">
+    <div class="max-w-6xl mx-auto px-6">
+      <header class="flex items-center justify-between py-5">
+        <a href="home_2.html" class="flex items-center gap-3">
+          <div class="logo text-2xl font-semibold text-slate-900">BeFR</div>
+          <div class="text-sm text-slate-500">Deepfake detection</div>
+        </a>
+        <nav class="flex gap-6 text-sm">
+          <a href="home_2.html" class="text-slate-700">Home</a>
+          <a href="pred_2.html" class="text-slate-700">Prediction</a>
+          <a href="info.html" class="text-slate-700">Info</a>
+          <a href="help.html" class="text-slate-700">Help</a>
+        </nav>
+      </header>
+    </div>
+  </div>
+
+  <main class="max-w-3xl mx-auto px-6 py-10">
+    <div class="rounded-lg border bg-white p-6 shadow">
+      <h1 class="text-2xl font-semibold">Report an error</h1>
+      <p class="text-sm text-slate-600 mt-2">If you believe a prediction was incorrect, please submit details and (optionally) the image.</p>
+
+      <form id="reportForm" class="mt-4 space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-700">Description</label>
+          <textarea id="errDesc" rows="6" class="mt-1 block w-full rounded border p-3 text-sm" placeholder="Describe the issue..."></textarea>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-700">Upload image (optional)</label>
+          <input id="reportFile" type="file" accept="image/*" class="mt-1" />
+        </div>
+
+        <div>
+          <div class="text-sm font-medium text-slate-700">Correct label (if known)</div>
+          <div class="mt-2 flex gap-3">
+            <label class="inline-flex items-center gap-2">
+              <input type="radio" name="correctLabel" value="AI" />
+              <span class="text-sm">AI</span>
+            </label>
+            <label class="inline-flex items-center gap-2">
+              <input type="radio" name="correctLabel" value="Real" />
+              <span class="text-sm">Real</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="text-right">
+          <button type="submit" class="px-5 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">Submit Report</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <footer class="max-w-6xl mx-auto px-6 py-8 text-sm text-slate-500">References • Privacy</footer>
+
+<script>
+  document.getElementById('reportForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    alert('Thank you. Your report was submitted (demo).');
+    // Replace with POST to your backend, e.g.:
+    // const fd = new FormData();
+    // fd.append('description', document.getElementById('errDesc').value);
+    // fd.append('file', document.getElementById('reportFile').files[0]);
+    // fetch('/api/report', { method:'POST', body: fd });
+  });
+</script>
+</body>
+</html>
