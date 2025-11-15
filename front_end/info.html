@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BeFR — Info</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600,700&family=Poppins:wght@600&display=swap" rel="stylesheet">
+  <style>body{font-family:'Inter',system-ui;}.logo{font-family:'Poppins'}</style>
+</head>
+<body class="min-h-screen bg-slate-50">
+  <div class="bg-white shadow-sm">
+    <div class="max-w-6xl mx-auto px-6">
+      <header class="flex items-center justify-between py-5">
+        <a href="home_2.html" class="flex items-center gap-3">
+          <div class="logo text-2xl font-semibold text-slate-900">BeFR</div>
+          <div class="text-sm text-slate-500">Deepfake detection</div>
+        </a>
+        <nav class="flex gap-6 text-sm">
+          <a href="home_2.html" class="text-slate-700">Home</a>
+          <a href="pred_2.html" class="text-slate-700">Prediction</a>
+          <a href="info.html" class="text-slate-900 font-medium">Info</a>
+          <a href="help.html" class="text-slate-700">Help</a>
+        </nav>
+      </header>
+    </div>
+  </div>
+
+  <main class="max-w-6xl mx-auto px-6 py-10">
+    <div class="rounded-lg border bg-white p-6 shadow">
+      <h1 class="text-2xl font-semibold text-slate-900">About BeFR</h1>
+      <p class="text-slate-700 mt-3">BeFR is a prototype system that demonstrates visual deepfake detection. The model uses a convolutional backbone fine-tuned on curated datasets. This demo emphasizes explainability, confidence reporting, and a simple UX for non-expert users.</p>
+
+      <div class="mt-6 grid md:grid-cols-2 gap-4">
+        <div class="rounded border p-4">
+          <h3 class="font-medium text-slate-900">Trained model</h3>
+          <p class="text-sm text-slate-600 mt-2">Backbone: EfficientNet / Xception variants; loss: focal + BCE; augmented training for robustness.</p>
+        </div>
+        <div class="rounded border p-4">
+          <h3 class="font-medium text-slate-900">Dataset</h3>
+          <p class="text-sm text-slate-600 mt-2">Training data is a mix of public deepfake datasets and curated real images. For publication, ensure licensing compliance and dataset documentation.</p>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <h4 class="font-medium">Team</h4>
+        <div class="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="p-3 border rounded flex items-start gap-3">
+            <div class="w-12 h-12 bg-slate-100 rounded flex items-center justify-center text-slate-400">MC</div>
+            <div>
+              <div class="font-medium">Marco Cruz</div>
+              <div class="text-xs text-slate-500">Frontend & integration</div>
+            </div>
+          </div>
+          <!-- add more members if needed -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="max-w-6xl mx-auto px-6 py-8 text-sm text-slate-500">References • Privacy</footer>
+</body>
+</html>
