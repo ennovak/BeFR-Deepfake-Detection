@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BeFR — Home</title>
+
+  <!-- Tailwind CDN (for development / prototype) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --brand: #0f172a; /* slate-900 */
+      --accent: #0ea5a4; /* teal-500 / accent */
+    }
+    body { font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: #f8fafc; }
+    .logo { font-family: 'Poppins', sans-serif; color: var(--brand); font-weight:600; }
+  </style>
+</head>
+<body class="min-h-screen">
+  <div class="bg-white shadow-sm">
+    <div class="max-w-6xl mx-auto px-6">
+      <header class="flex items-center justify-between py-5">
+        <a href="home_2.html" class="flex items-center gap-3">
+          <div class="logo text-2xl">BeFR</div>
+          <div class="text-sm text-slate-500">Deepfake detection</div>
+        </a>
+        <nav class="flex gap-6 text-sm">
+          <a href="home_2.html" class="text-slate-700 hover:text-slate-900">Home</a>
+          <a href="pred_2.html" class="text-slate-700 hover:text-slate-900">Prediction</a>
+          <a href="info.html" class="text-slate-700 hover:text-slate-900">Info</a>
+          <a href="help.html" class="text-slate-700 hover:text-slate-900">Help</a>
+        </nav>
+      </header>
+    </div>
+  </div>
+
+  <main class="max-w-6xl mx-auto px-6 py-10">
+    <section class="grid md:grid-cols-2 gap-8 items-start">
+      <article>
+        <h1 class="text-3xl font-semibold text-slate-900 mb-4">What to look for</h1>
+        <p class="text-slate-700 leading-relaxed mb-6">
+          Deepfakes often leave subtle traces: inconsistent lighting, blur around edges, mismatched facial landmarks, and unnatural eye blinking. BeFR analyzes visual patterns and returns a confidence score.
+        </p>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="rounded-lg border bg-white p-4 shadow">
+            <div class="text-sm font-medium text-slate-800 mb-2">Example: natural</div>
+            <div class="h-40 rounded-md bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center text-slate-400">Sample image</div>
+            <p class="text-xs text-slate-500 mt-2">Even lighting and clear edges — typical of real photos.</p>
+          </div>
+
+          <div class="rounded-lg border bg-white p-4 shadow">
+            <div class="text-sm font-medium text-slate-800 mb-2">Example: artifact</div>
+            <div class="h-40 rounded-md bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center text-slate-400">Sample image</div>
+            <p class="text-xs text-slate-500 mt-2">Blur or inconsistent hair/skin details — suspicious region.</p>
+          </div>
+        </div>
+      </article>
+
+      <aside>
+        <div class="rounded-lg border bg-white p-6 shadow">
+          <h3 class="text-lg font-semibold text-slate-900">Model & Dataset</h3>
+          <p class="text-sm text-slate-600 mt-2">Prototype uses a CNN backbone fine-tuned on balanced real/synthetic datasets (research/development). For production, combine audio verification and multiple ensemble detectors.</p>
+          <div class="mt-4 flex gap-3">
+            <a class="inline-block px-3 py-2 border rounded text-sm text-slate-700 hover:bg-slate-50" href="#" target="_blank">Model details</a>
+            <a class="inline-block px-3 py-2 border rounded text-sm text-slate-700 hover:bg-slate-50" href="#" target="_blank">Dataset</a>
+          </div>
+        </div>
+
+        <div class="rounded-lg border bg-white p-6 shadow mt-6">
+          <h4 class="text-sm font-semibold text-slate-900">Team</h4>
+          <div class="mt-3 flex items-center gap-3">
+            <div class="h-12 w-12 bg-slate-100 rounded-md flex items-center justify-center text-slate-400">MK</div>
+            <div>
+              <div class="text-sm font-medium">Marco Cruz</div>
+              <div class="text-xs text-slate-500">Frontend & integration</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="mt-10 text-sm text-slate-500">
+      <hr class="border-slate-200" />
+      <div class="mt-6">References • • •</div>
+    </section>
+  </main>
+
+  <footer class="max-w-6xl mx-auto px-6 py-8 text-sm text-slate-500">
+    <div class="flex flex-col md:flex-row md:justify-between gap-4">
+      <div>© BeFR — Prototype</div>
+      <div>Contact • Privacy • Terms</div>
+    </div>
+  </footer>
+</body>
+</html>
