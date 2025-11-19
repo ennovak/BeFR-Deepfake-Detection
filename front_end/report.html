@@ -66,14 +66,29 @@
   <footer class="max-w-6xl mx-auto px-6 py-8 text-sm text-slate-500">References • Privacy</footer>
 
 <script>
+  const API_BASE = 'http://127.0.0.1:5000';
+
   document.getElementById('reportForm').addEventListener('submit', (e) => {
     e.preventDefault();
-    alert('Thank you. Your report was submitted (demo).');
-    // Replace with POST to your backend, e.g.:
-    // const fd = new FormData();
-    // fd.append('description', document.getElementById('errDesc').value);
-    // fd.append('file', document.getElementById('reportFile').files[0]);
-    // fetch('/api/report', { method:'POST', body: fd });
+
+    // POST to backend:
+    const submitReport = (async () => {
+    const fd = new FormData();
+    fd.append('description', document.getElementById('errDesc').value);
+    fd.append('file', document.getElementById('reportFile').files[0]);
+    try {
+      const resp = await fetch(API_BASE + '/api/report', { method:'POST', body: fd });
+      if (!resp.ok) {
+        const errorText = await resp.text();
+        throw new Error(`Backend error (${resp.status}): ${errorText}`);
+      }
+      alert('Thank you. Your report was submitted.');
+      return await resp.json();
+    } catch (err) {
+      console.error('Submission error:', err);
+      throw err;
+    }
+    })();
   });
 </script>
 </body>
