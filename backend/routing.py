@@ -1,10 +1,11 @@
-from flask import Blueprint, request, jsonify
+from flask import Flask, jsonify, request, send_from_directory, abort
+from flask_cors import CORS
 from werkzeug.utils import secure_filename
+from datetime import datetime
 import os
 import uuid
-from database import predictions_collection
 
-# modules for database operations, 
+# modules for database operations
 from report_database import save_report, get_report, list_reports
 from modelLoad import load_cnn_model            # Mia's modelLoad.py, UNCOMMENT LATER
 from prediction import run_prediction           # Mia's prediction.py, UNCOMMENT LATER 
@@ -15,7 +16,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # will get from Mia's file UNCOMMENT LATER
 MODEL = load_cnn_model()   # load CNN once at startup
-MODEL_PATH = "cnn_model"   # path where model is stored (optional, can take this out)
+MODEL_PATH = "CNN_model.keras"   # path where model is stored (optional, can take this out)
 METADATA = None            # extra model info (optional,can take this out)
 
 

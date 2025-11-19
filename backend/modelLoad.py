@@ -1,14 +1,16 @@
 # modelLoad.py
-import tensorflow as tf
 import numpy as np
 from PIL import Image
 import os
+import tensorflow as tf
+from tensorflow.keras.models import load_model
+from tensorflow.keras.applications.efficientnet import preprocess_input as eff_preprocess
 
 # path for the model
-MODEL_PATH = "models/final_model.h5"
+MODEL_PATH = "CNN_model.keras"
 
 # image size the model expects
-IMAGE_SIZE = (224, 224)
+IMAGE_SIZE = (128, 128)
 
 def load_cnn_model():
     """Load the trained model."""
@@ -16,7 +18,7 @@ def load_cnn_model():
         print("Model file not found yet.")
         return None
 
-    model = tf.keras.models.load_model(MODEL_PATH)
+    model = tf.keras.models.load_model(MODEL_PATH, custom_objects={"preprocess_input": eff_preprocess})
     return model
 
 

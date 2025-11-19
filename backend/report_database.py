@@ -13,17 +13,23 @@ load_dotenv()
 uri = os.getenv("uri")
 DB_NAME = os.getenv("DB_NAME")
 
-client = MongoClient(uri, server_api=ServerApi('1'))
-db = client[DB_NAME]
-predictions_collection = db["predictions"]
+db = None
+predictions_collection = None
+client = None
 
-# Send a ping to confirm a successful connection
-# comment out later
-try:
-    client.admin.command('ping')
-    print("Pinged your deployment. You successfully connected to MongoDB!")
-except Exception as e:
-    print(e)
+if uri and DB_NAME:
+    client = MongoClient(uri, server_api=ServerApi('1'))
+    db = client[DB_NAME]
+    predictions_collection = db["predictions"]
+    
+    # Send a ping to confirm a successful connection
+    try:
+        client.admin.command('ping')
+        print("Pinged your deployment. You successfully connected to MongoDB!")
+    except Exception as e:
+        print(f"MongoDB connection warning: {e}")
+else:
+    print("Warning: MongoDB not configured. Database features disabled.")
 
 # save report
 def save_report(report):
@@ -34,19 +40,17 @@ def save_report(report):
 # get a specific report
 def get_report(report_id):
     try:
-          obj_id = ObjectId(report_id)
+        obj_id = ObjectId(report_id)
+        doc = predictions_collection.find_one({"_id": obj_id})
+        if not doc:
+            return None
+        # convert ObjectId to string
+        doc["id"] = str(doc["_id"])
+        del doc["_id"]
+        return doc          
     except:
-         return None
+        return None
     
-	doc = predictions_collection.find_one({"_id": obj_id})
-    if not doc:
-         return None
-    
-	# convert ObjectId to string
-    doc["id"] = str(doc["_id"])
-    del doc["_id"]
-    return doc
-
 # list reports
 def list_reports(limit=20):
     cursor = predictions_collection.find().sort("_id", -1).limit(limit)
