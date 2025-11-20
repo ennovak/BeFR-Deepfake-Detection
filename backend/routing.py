@@ -6,16 +6,13 @@ import os
 import uuid
 
 # modules for database operations
-from backend.report_database import save_report, get_report, list_reports
-from backend.modelLoad import load_cnn_model            # Mia's modelLoad.py, UNCOMMENT LATER
-from backend.prediction import run_prediction           # Mia's prediction.py, UNCOMMENT LATER 
+from report_database import save_report, get_report, list_reports
+from modelLoad import load_cnn_model            # Mia's modelLoad.py, UNCOMMENT LATER
+from prediction import run_prediction           # Mia's prediction.py, UNCOMMENT LATER 
 
 # global model & upload config
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-
-# front end
-FRONTEND_DIR = os.path.join(os.path.dirname(__file__), "..", "front_end")
 
 # will get from Mia's file UNCOMMENT LATER
 MODEL = load_cnn_model()   # load CNN once at startup
@@ -43,15 +40,6 @@ def simple_detector_stub(path):
 def create_app():
     app = Flask(__name__) # creates the web server 
     CORS(app) #allows frontend to call backend API
-
-    # Serve frontend files
-    @app.route("/")
-    def home():
-        return send_from_directory(FRONTEND_DIR, "home_2.html")
-
-    @app.route("/<path:path>")
-    def static_files(path):
-        return send_from_directory(FRONTEND_DIR, path)
 
     # checkpoint used by developers to confirm backend is running, returns: {"status": "ok"}
     @app.route("/api/health", methods=["GET"])
@@ -111,11 +99,16 @@ def create_app():
             "created_at": datetime.utcnow().isoformat(),
         }
         report_id = save_report(report) # saves the report to the database
+        if report_id is None:
+            # database insert failed or DB not configured
+            return jsonify({"error": "failed to save report to database", "report": report}), 500
+
         return jsonify({"report_id": report_id, "report": report}), 201 # frontend receives the report ID and report details in JSON format
 
     # get report by its unique ID
-    @app.route("/api/report/<int:report_id>", methods=["GET"])
+    @app.route("/api/report/<report_id>", methods=["GET"])
     def get_report_route(report_id):
+        # report_id is expected to be a MongoDB ObjectId string
         r = get_report(report_id)
         if not r:
             return jsonify({"error": "not found"}), 404 #returns 404 if report not found
@@ -149,8 +142,7 @@ def create_app():
 
     return app # returns the app instance
 
-app = create_app()
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 7860))
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app = create_app()
+    app.run(debug=True)
