@@ -70,7 +70,6 @@
   </footer>
 
 <script>
-  const API_BASE = 'http://127.0.0.1:5000';
 
   document.getElementById('reportForm').addEventListener('submit', (e) => {
     e.preventDefault();
@@ -81,7 +80,7 @@
     fd.append('description', document.getElementById('errDesc').value);
     fd.append('file', document.getElementById('reportFile').files[0]);
     try {
-      const resp = await fetch(API_BASE + '/api/report', { method:'POST', body: fd });
+      const resp = await fetch('/api/report', { method:'POST', body: fd });
       if (!resp.ok) {
         const errorText = await resp.text();
         throw new Error(`Backend error (${resp.status}): ${errorText}`);

@@ -146,6 +146,24 @@
     fileInput.dispatchEvent(new Event('change'));
   });
 
+    // Send image to backend
+  const sendImageToBackend = async (file) => {
+    const fd = new FormData();
+    fd.append('image', file);
+    try {
+      const resp = await fetch('/api/detect', { method:'POST', body: fd });
+      if (!resp.ok) {
+        const errorText = await resp.text();
+        throw new Error(`Backend error (${resp.status}): ${errorText}`);
+      }
+      return await resp.json();
+    } catch (err) {
+      console.error('Upload error:', err);
+      throw err;
+    }
+  };
+
+
   predictBtn.addEventListener('click', async () => {
     if (!selectedFile) { alert('Please upload an image first.'); return; }
 
@@ -164,33 +182,33 @@
       progressBar.style.width = p + '%';
       if (p >= 100) {
         clearInterval(timer);
-        // Demo result (replace with backend response)
-        const ai = Math.round(Math.random()*40 + 10);
-        const real = 100 - ai;
-        const top = ai > real ? 'AI' : 'Real';
-        const conf = Math.max(ai, real);
-        resultLabel.textContent = top;
-        resultConfidence.textContent = conf + '%';
-        aiPct.textContent = ai + '%';
-        realPct.textContent = real + '%';
       }
     }, 250);
 
-    /* Example backend integration:
-    const fd = new FormData();
-    fd.append('file', selectedFile);
-    const resp = await fetch('https://your-backend.example.com/api/predict', { method:'POST', body: fd });
-    if (!resp.ok) { 
-      // handle error
+    try {
+      // Backend integration:
+      const data = await sendImageToBackend(selectedFile);
+      if (data && data.report) {
+        const report = data.report;
+        const confidence = Math.round(report.confidence * 100);
+        const aiPctVal = report.is_ai ? confidence : (100 - confidence);
+        const realPctVal = !report.is_ai ? confidence : (100 - confidence);
+        
+        aiPct.textContent = aiPctVal + '%';
+        realPct.textContent = realPctVal + '%';
+        if (report.is_ai) {
+          resultLabel.textContent = 'AI-Generated';
+        } else {
+          resultLabel.textContent = 'Real';
+        }
+        resultConfidence.textContent = confidence + '%';
+        progressBar.style.width = '100%';
+      }
+    } catch (err) {
+      resultLabel.textContent = 'Error';
+      resultConfidence.textContent = '—%';
+      alert('Prediction failed: ' + err.message);
     }
-    const json = await resp.json();
-    // expect json = { ai_pct: 23, real_pct: 77 }
-    aiPct.textContent = json.ai_pct + '%';
-    realPct.textContent = json.real_pct + '%';
-    resultLabel.textContent = json.ai_pct > json.real_pct ? 'AI' : 'Real';
-    resultConfidence.textContent = Math.max(json.ai_pct, json.real_pct) + '%';
-    progressBar.style.width = '100%';
-    */
   });
 </script>
 </body>
