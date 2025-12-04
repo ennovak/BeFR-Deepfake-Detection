@@ -118,9 +118,8 @@
   const resultConfidence = document.getElementById('resultConfidence');
   const aiPct = document.getElementById('aiPct');
   const realPct = document.getElementById('realPct');
-
   let selectedFile = null;
-
+  // FILE SELECTION + PREVIEW
   fileInput.addEventListener('change', (e) => {
     selectedFile = e.target.files[0];
     if (!selectedFile) return;
@@ -135,8 +134,7 @@
     };
     reader.readAsDataURL(selectedFile);
   });
-
-  // drag & drop support
+  // DRAG & DROP SUPPORT
   const uploadLabel = document.querySelector('label[for="fileInput"]');
   uploadLabel.addEventListener('dragover', (e) => { e.preventDefault(); uploadLabel.classList.add('bg-slate-50'); });
   uploadLabel.addEventListener('dragleave', () => { uploadLabel.classList.remove('bg-slate-50'); });
@@ -145,13 +143,15 @@
     fileInput.files = e.dataTransfer.files;
     fileInput.dispatchEvent(new Event('change'));
   });
-
-    // Send image to backend
+  // SEND TO BACKEND
   const sendImageToBackend = async (file) => {
     const fd = new FormData();
     fd.append('image', file);
     try {
-      const resp = await fetch('/api/detect', { method:'POST', body: fd });
+      const resp = await fetch('/api/detect', {
+        method: 'POST',
+        body: fd
+      });
       if (!resp.ok) {
         const errorText = await resp.text();
         throw new Error(`Backend error (${resp.status}): ${errorText}`);
@@ -162,49 +162,49 @@
       throw err;
     }
   };
-
-
+  // PREDICTION BUTTON 
   predictBtn.addEventListener('click', async () => {
-    if (!selectedFile) { alert('Please upload an image first.'); return; }
-
+    if (!selectedFile) {
+      alert('Please upload an image first.');
+      return;
+    }
+    // Reset UI
     resultsCard.classList.remove('hidden');
     progressBar.style.width = '0%';
     resultLabel.textContent = 'Processing...';
     resultConfidence.textContent = '—%';
     aiPct.textContent = '—%';
     realPct.textContent = '—%';
-
-    // Simulate progress for demo. Replace with real fetch to backend for inference.
-    let p = 0;
-    const timer = setInterval(() => {
-      p += Math.floor(Math.random()*12)+5;
-      if (p > 100) p = 100;
-      progressBar.style.width = p + '%';
-      if (p >= 100) {
-        clearInterval(timer);
+    // Progress bar start
+    let progress = 0;
+    const interval = setInterval(() => {
+      if (progress < 90) {
+        progress += 1;
+        progressBar.style.width = progress + "%";
       }
-    }, 250);
-
+    }, 50);
     try {
-      // Backend integration:
       const data = await sendImageToBackend(selectedFile);
+      // Progress stop
+      clearInterval(interval);
       if (data && data.report) {
         const report = data.report;
-        const confidence = Math.round(report.confidence * 100);
-        const aiPctVal = report.is_ai ? confidence : (100 - confidence);
-        const realPctVal = !report.is_ai ? confidence : (100 - confidence);
-        
-        aiPct.textContent = aiPctVal + '%';
-        realPct.textContent = realPctVal + '%';
-        if (report.is_ai) {
-          resultLabel.textContent = 'AI-Generated';
-        } else {
-          resultLabel.textContent = 'Real';
-        }
-        resultConfidence.textContent = confidence + '%';
+        const fakeProb = Math.round(report.prob_fake * 100);
+        const realProb = Math.round(report.prob_real * 100);
+        // Decide label using probabilities
+        let label = realProb > fakeProb ? "Real" : "AI-Generated";
+        // Apply results to UI
+        resultLabel.textContent = label;
+        resultConfidence.textContent = (label == "Real" ? realProb : fakeProb) + '%';
+        aiPct.textContent = fakeProb + '%';
+        realPct.textContent = realProb + '%';
         progressBar.style.width = '100%';
+      } else {
+        throw new Error("Backend returned no report.");
       }
     } catch (err) {
+      console.error(err);
+      clearInterval(interval); // clear after error
       resultLabel.textContent = 'Error';
       resultConfidence.textContent = '—%';
       alert('Prediction failed: ' + err.message);

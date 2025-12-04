@@ -29,4 +29,5 @@ def preprocess_image(image_path):
 
     arr = np.array(img) / 255.0
     arr = np.expand_dims(arr, axis=0)
+    arr = eff_preprocess(arr)
     return arr

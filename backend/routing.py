@@ -33,9 +33,11 @@ def allowed_filename(name):
 # stub used if model fails (for testing only)
 def simple_detector_stub(path):
     import random
+    prob = random.random()
     return {
-        "is_ai": random.random() > 0.5,
-        "confidence": random.random(),
+        "label": prob > 0.5,
+        "prob_fake": prob,
+        "prob_real": 1-prob,
         "model": "stub"
     }
 
@@ -101,12 +103,14 @@ def create_app():
             print(f"Model inference failed, falling back to stub: {ex}")
             result = simple_detector_stub(save_path)
 
+        print("Prediction Result: ", result)
         # report entry, builds a JSON object with the report details
         # will be stored in MongoDB database 
         report = {
             "filename": filename,
-            "is_ai": result["is_ai"],
-            "confidence": result["confidence"],
+            "label": result["label"],
+            "prob_fake": result["prob_fake"],
+            "prob_real": result["prob_real"],
             "model": result.get("model", "cnn"),
             "created_at": datetime.utcnow().isoformat(),
         }
